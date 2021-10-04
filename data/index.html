@@ -1,0 +1,611 @@
+<html>
+
+<head>
+	<style>
+		.PMS_l {
+			text-align: center;
+		}
+
+		.PMS_p {
+			display: inline-grid;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="main_panel" class="panel" style="">
+		<div>
+			Progress:<progress id="progress" value="100" max="100"></progress><br />
+			Status:<span id="status">download completed</span><br /><br />
+			Address:<input type="number" id="address" />
+			<h1>Read:</h1>
+			Count:<input type="number" id="count" /><br />
+			<textarea id="output" readonly="" style="width: 263px; height: 174px"></textarea><br />
+			<button onclick="doRead()">Read</button>
+			<h1>Write:</h1>
+			Data:<input type="text" id="data" />
+			<button onclick="doWrite()">Write</button>
+		</div>
+		<br /><br />
+	</div>
+
+	<div id="conf_panel" class="panel" style="visibility: hidden; height: 0px">
+		<div id="pinmodes">
+			<div class="PMS_p">
+				<span class="PMS_l">28</span><br /><select>
+					<option value="0">VCC</option>
+				</select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">27</span><br /><select pin="27" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">26</span><br /><select pin="26" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">25</span><br /><select pin="25" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">24</span><br /><select pin="24" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">23</span><br /><select pin="23" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">22</span><br /><select pin="22" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">21</span><br /><select pin="21" class="pinMode_select"></select>
+			</div>
+			<div class="PMS_p">
+				<span class="PMS_l">20</span><br /><select pin="20" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">19</span><br /><select pin="19" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">18</span><br /><select pin="18" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">17</span><br /><select pin="17" class="pinMode_select"></select>
+			</div>
+			<div class="PMS_p">
+				<span class="PMS_l">16</span><br /><select pin="16" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">15</span><br /><select pin="15" class="pinMode_select"></select>
+			</div>
+			<br /><br /><br /><br />
+			<div class="PMS_p">
+				<span class="PMS_l">*1</span><br /><select pin="1" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">2</span><br /><select pin="2" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">3</span><br /><select pin="3" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">4</span><br /><select pin="4" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">5</span><br /><select pin="5" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">6</span><br /><select pin="6" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">7</span><br /><select pin="7" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">8</span><br /><select pin="8" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">9</span><br /><select pin="9" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">10</span><br /><select pin="10" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">11</span><br /><select pin="11" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">12</span><br /><select pin="12" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">13</span><br /><select pin="13" class="pinMode_select"></select>
+			</div>
+
+			<div class="PMS_p">
+				<span class="PMS_l">14</span><br /><select pin="14" class="pinMode_select"></select>
+			</div>
+		</div>
+	</div>
+
+	<div id="reg_panel" class="panel" style="visibility: hidden; height: 0px">
+		<div>
+			WriteReg:
+			<select id="mcp_sel_w">
+				<option value="0">MCP1</option>
+				<option value="1">MCP2</option>
+			</select><select id="reg_sel">
+				<option value="0">IODIR_A</option>
+				<option value="1">IODIR_B</option>
+				<option value="2">IPOL_A</option>
+				<option value="3">IPOL_B</option>
+				<option value="4">GPINTEN_A</option>
+				<option value="5">GPINTEN_B</option>
+				<option value="6">DEFVAL_A</option>
+				<option value="7">DEFVAL_B</option>
+				<option value="8">INTCON_A</option>
+				<option value="9">INTCON_B</option>
+				<option value="10">IOCON</option>
+				<option value="12">GPPU_A</option>
+				<option value="13">GPPU_B</option>
+				<option value="14">INTF_A</option>
+				<option value="15">INTF_B</option>
+				<option value="16">INTCAP_A</option>
+				<option value="17">INTCAP_B</option>
+				<option value="18">GPIO_A</option>
+				<option value="19">GPIO_B</option>
+				<option value="20">OLAT_A</option>
+				<option value="21">OLAT_B</option>
+			</select><input type="number" id="reg_val" /><button onclick="writeReg()">
+				Write
+			</button>
+		</div>
+		<br /><br />
+		<div>
+			Registers: <button onclick="refreshRegs()">Refresh</button>
+			<div id="regbox">
+				<span>IODIR_A: 0x80 (10000000) / 0xf8 (11111000)</span><br /><span>IODIR_B: 0x47 (01000111) / 0x1f
+					(00011111)</span><br /><span>IPOL_A: 0x00 (00000000) / 0x00 (00000000)</span><br /><span>IPOL_B:
+					0x00 (00000000) / 0x00 (00000000)</span><br /><span>GPINTEN_A: 0x00 (00000000) / 0x00
+					(00000000)</span><br /><span>GPINTEN_B: 0x00 (00000000) / 0x00
+					(00000000)</span><br /><span>DEFVAL_A: 0x00 (00000000) / 0x00 (00000000)</span><br /><span>DEFVAL_B:
+					0x00 (00000000) / 0x00 (00000000)</span><br /><span>INTCON_A: 0x00 (00000000) / 0x00
+					(00000000)</span><br /><span>INTCON_B: 0x00 (00000000) / 0x00 (00000000)</span><br /><span>IOCON:
+					0x20 (00100000) / 0x20 (00100000)</span><br /><span>GPPU_A: 0x80 (10000000) / 0xf8
+					(11111000)</span><br /><span>GPPU_B: 0x40 (01000000) / 0x00 (00000000)</span><br /><span>INTF_A:
+					0x00 (00000000) / 0x00 (00000000)</span><br /><span>INTF_B: 0x00 (00000000) / 0x00
+					(00000000)</span><br /><span>INTCAP_A: 0x00 (00000000) / 0x00 (00000000)</span><br /><span>INTCAP_B:
+					0x00 (00000000) / 0x00 (00000000)</span><br /><span>GPIO_A: 0x82 (10000010) / 0xf8
+					(11111000)</span><br /><span>GPIO_B: 0xc8 (11001000) / 0xa0 (10100000)</span><br /><span>OLAT_A:
+					0x02 (00000010) / 0x00 (00000000)</span><br /><span>OLAT_B: 0x88 (10001000) / 0xa0
+					(10100000)</span><br />
+			</div>
+		</div>
+	</div>
+
+	<div id="wifi_panel" class="panel" style="visibility: hidden; height: 0px">
+		<input type="checkbox" id="modify_ssid" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">SSID: </span><input
+			onchange="RenderErrorsWifiConf()" type="text" id="ssid" class="wifiConfField" /><br />
+		<input type="checkbox" id="modify_pass" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">PASSWORD:
+		</span><input onchange="RenderErrorsWifiConf()" type="text" id="password" class="wifiConfField" /><br />
+		<br>
+		<input type="checkbox" id="modify_apssid" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">AP SSID:
+		</span><input onchange="RenderErrorsWifiConf()" type="text" id="ap_ssid" class="ap_mod wifiConfField" /><br />
+		<input type="checkbox" id="modify_appass" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">AP PASSWORD:
+		</span><input onchange="RenderErrorsWifiConf()" type="text" id="ap_password"
+			class="ap_mod wifiConfField" /><br />
+		<button onclick="SendWifiConfiguration()">Save</button>
+	</div>
+
+	<script>
+		const registers = {
+			IODIR_A: 0x00,
+			IODIR_B: 0x01,
+			IPOL_A: 0x02,
+			IPOL_B: 0x03,
+			GPINTEN_A: 0x04,
+			GPINTEN_B: 0x05,
+			DEFVAL_A: 0x06,
+			DEFVAL_B: 0x07,
+			INTCON_A: 0x08,
+			INTCON_B: 0x09,
+			IOCON: 0x0a,
+			GPPU_A: 0x0c,
+			GPPU_B: 0x0d,
+			INTF_A: 0x0e,
+			INTF_B: 0x0f,
+			INTCAP_A: 0x10,
+			INTCAP_B: 0x11,
+			GPIO_A: 0x12,
+			GPIO_B: 0x13,
+			OLAT_A: 0x14,
+			OLAT_B: 0x15
+		};
+		const pinModes = {
+			GND: 0x00,
+			WE: 0x01,
+			CE: 0x02,
+			OE: 0x03,
+			A: 0x04,
+			IO: 0x05,
+			SDA: 0x06,
+			CLK: 0x07,
+			MISO: 0x08,
+			MOSI: 0x09,
+			CS: 0x0a,
+			NC: 0x0b,
+			RDY: 0x0c
+		};
+
+		const allModes = {
+			A0: 1024,
+			A1: 1025,
+			A10: 1034,
+			A11: 1035,
+			A12: 1036,
+			A13: 1037,
+			A14: 1038,
+			A15: 1039,
+			A2: 1026,
+			A3: 1027,
+			A4: 1028,
+			A5: 1029,
+			A6: 1030,
+			A7: 1031,
+			A8: 1032,
+			A9: 1033,
+			CE: 512,
+			CLK: 1792,
+			CS: 2560,
+			GND: 0,
+			IO0: 1280,
+			IO1: 1281,
+			IO10: 1290,
+			IO11: 1291,
+			IO12: 1292,
+			IO13: 1293,
+			IO14: 1294,
+			IO15: 1295,
+			IO2: 1282,
+			IO3: 1283,
+			IO4: 1284,
+			IO5: 1285,
+			IO6: 1286,
+			IO7: 1287,
+			IO8: 1288,
+			IO9: 1289,
+			MISO: 2048,
+			MOSI: 2304,
+			NC: 2816,
+			OE: 768,
+			RDY: 3072,
+			SDA: 1536,
+			WE: 256
+		};
+
+		const PinToZifTable = [
+			8, 7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 10, 9, 14, 26, 27, 23, 24,
+			25, -1, -1, -1, -1, -1, 15, 16, 17, 18, 19, 20, 21, 22
+		];
+		const PinToZifTableRev = [
+			7, 6, 5, 4, 3, 2, 1, 0, 12, 11, 10, 9, 8, 13, 24, 25, 26, 27,
+			28, 29, 30, 31, 16, 17, 18, 14, 15
+		];
+
+		let _fetch = fetch;
+		async function fetch_p(...args) {
+			status("downloading...");
+			const response = await _fetch(...args);
+			const contentLength = response.headers.get("content-length");
+			const total = parseInt(contentLength, 10);
+			let loaded = 0;
+
+			const res = new Response(
+				new ReadableStream({
+					async start(controller) {
+						const reader = response.body.getReader();
+						for (; ;) {
+							const { done, value } = await reader.read();
+							if (done) break;
+							loaded += value.byteLength;
+							progress({
+								loaded,
+								total
+							});
+							controller.enqueue(value);
+						}
+						controller.close();
+					}
+				})
+			);
+			status("download completed");
+			return res;
+		}
+
+		let useFetch_p = true;
+		if (useFetch_p) {
+			fetch = fetch_p;
+		}
+
+		async function ReadEEPROM(address, count) {
+			let result = await SendCMD("read", {
+				address,
+				count
+			});
+			return result.text();
+		}
+
+		let blockSize = 65535;
+		async function ReadEEPROM_Blocks(_addr, _count) {
+			let txt = "";
+			while (_count > 0) {
+				let toRead = _count > blockSize ? blockSize : _count;
+				txt += await ReadEEPROM(_addr, toRead);
+				_count -= toRead;
+				_addr += toRead;
+			}
+			return txt;
+		}
+
+		async function WriteEEPROM(address, data) {
+			let result = await SendCMD("write", {
+				address,
+				data
+			});
+			return result.text();
+		}
+
+		async function Render() {
+			renderRegSel();
+			RenderPinModes();
+			fetchPinModes();
+			RenderErrorsWifiConf();
+
+			ShowPanel(document.location.hash.replace("#", ""));
+		}
+		Render();
+
+		async function doRead() {
+			document.querySelector("#output").value =
+				await ReadEEPROM_Blocks(
+					Number(document.querySelector("#address").value),
+					Number(document.querySelector("#count").value)
+				);
+		}
+		async function doWrite() {
+			await WriteEEPROM(
+				Number(document.querySelector("#address").value),
+				document.querySelector("#data").value
+			);
+		}
+
+		const elStatus = document.getElementById("status");
+
+		function status(text) {
+			try {
+				elStatus.innerHTML = text;
+			} catch { }
+		}
+
+		const elProgress = document.getElementById("progress");
+
+		function progress({ loaded, total }) {
+			try {
+				elProgress.value = Math.round((loaded / total) * 100);
+			} catch (ex) { }
+		}
+
+		async function digitalWrite(pin, state) {
+			let result = await SendCMD("mcpdwrite", {
+				pin,
+				state
+			});
+			return result.text();
+		}
+
+		async function MCPDumpRegs() {
+			return await fetch("/mcpdump/", {
+				method: "GET"
+			});
+		}
+
+		function renderRegSel() {
+			let reg_sel = document.querySelector("#reg_sel");
+			reg_sel.innerHTML = "";
+			Object.keys(registers).forEach((key) => {
+				reg_sel.innerHTML += `<option value="${registers[key]}">${key}</option>`;
+			});
+		}
+
+		async function refreshRegs() {
+			let regs = await (await MCPDumpRegs()).text();
+			let regbox = document.querySelector("#regbox");
+			regbox.innerHTML = "";
+			regs.split("\n").forEach((el) => {
+				let reg = el.split(":");
+				if (reg[0] && reg[1]) {
+					reg = {
+						name: reg[0].trim(),
+						value1: reg[1].trim().split("/")[0],
+						value2: reg[1].trim().split("/")[1]
+					};
+					regbox.innerHTML += `<span>${reg.name}: ${intToHex(
+						reg.value1
+					)} / ${intToHex(reg.value2)}</span><br>`;
+				}
+			});
+		}
+
+		async function writeReg() {
+			let reg = document.querySelector("#reg_sel");
+			let data = document.querySelector("#reg_val");
+			let mcp = document.querySelector("#mcp_sel_w");
+			let result = await SendCMD("mcpwrite", {
+				data: data.value,
+				reg: reg.value,
+				i: mcp.value
+			});
+			return result.text();
+		}
+
+		function intToHex(int) {
+			while (int.length < 2) {
+				int = "0" + int;
+			}
+			let hex = "0x" + int;
+			let bin = Number(hex, 16).toString(2);
+			while (bin.length < 8) {
+				bin = "0" + bin;
+			}
+			return `${hex} (${bin})`;
+		}
+
+		async function SendCMD(endpoint, json) {
+			console.log(json);
+			let result = await fetch(endpoint + "/", {
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(json),
+				method: "POST"
+			});
+			return result;
+		}
+
+		function ShowPanel(panel) {
+			let toShow = document.querySelector("#" + panel + "_panel");
+			if (!toShow) {
+				document.location.hash = "#main";
+				return;
+			}
+			document.querySelectorAll(".panel").forEach((el) => {
+				el.style.visibility = "hidden";
+				el.style.height = "0px";
+			});
+			toShow.style.visibility = "";
+			toShow.style.height = "";
+			document.location.hash = "#" + panel;
+		}
+
+		function RenderPinModes() {
+			html = "";
+			Object.keys(allModes).forEach((key) => {
+				let value = allModes[key];
+				html += `<option value="${value}">${key}</option> `;
+			});
+			document.querySelectorAll(".pinMode_select").forEach((el) => {
+				el.innerHTML = html;
+			});
+		}
+
+		async function fetchPinModes() {
+			let mappings = await fetch("/pinconf/");
+			let json = await mappings.json();
+
+			json.mapping.forEach((el, i) => {
+				if (PinToZifTable[i] > 0) {
+					document.querySelector(
+						`select[pin='${PinToZifTable[i]}']`
+					).value = el;
+				}
+			});
+		}
+
+		function serializePinModes() {
+			let arr = [];
+			for (let i = 0; i < 32; i++) {
+				arr[i] = 0x0b00;
+			}
+			for (let i = 0; i < 27; i++) {
+				arr[PinToZifTableRev[i + 1]] = Number(
+					document.querySelector(`select[pin='${i + 1}']`).value
+				);
+			}
+			return arr;
+		}
+
+		async function SendWifiConfiguration() {
+			let ssid = document.querySelector("#ssid").value;
+			let password = document.querySelector("#password").value;
+			let apSSID = document.querySelector("#ap_ssid").value;
+			let apPass = document.querySelector("#ap_password").value;
+
+			let json = {};
+			if (ssid.length > 0 && document.querySelector("#modify_ssid").checked) {
+				json["ssid"] = ssid;
+			}
+			if (password.length >= 0 && document.querySelector("#modify_pass").checked) {
+				json["pass"] = password;
+			}
+			if (apSSID.length > 0 && document.querySelector("#modify_apssid").checked) {
+				json["ap_ssid"] = apSSID;
+			}
+			if (apPass.length >= 0 && document.querySelector("#modify_appass").checked) {
+				json["ap_pass"] = apPass;
+			}
+			if (IsWifiConfErrors()) {
+				alert("Configuration has errors.");
+				return;
+			}
+			await SendCMD("wificonf", json);
+		}
+
+		function RenderErrorsWifiConf() {
+			let ssid = document.querySelector("#ssid");
+			let password = document.querySelector("#password");
+			let apSSID = document.querySelector("#ap_ssid");
+			let apPass = document.querySelector("#ap_password");
+
+			document.querySelectorAll(".wifiConfField").forEach(el => {
+				el.style["border-color"] = "";
+				el.style["border-style"] = "";
+			})
+
+			GetWifiConfErrors().forEach(el => {
+				document.querySelector(el).style["border-color"] = "red";
+				document.querySelector(el).style["border-style"] = "solid";
+			})
+
+		}
+
+		function GetWifiConfErrors() {
+			let ssid = document.querySelector("#ssid").value;
+			let password = document.querySelector("#password").value;
+			let apSSID = document.querySelector("#ap_ssid").value;
+			let apPass = document.querySelector("#ap_password").value;
+
+			errors = [];
+
+			if (ssid.length <= 0 && document.querySelector("#modify_ssid").checked) {
+				errors.push("#ssid");
+			}
+			if (apSSID.length <= 0  && document.querySelector("#modify_apssid").checked) {
+				errors.push("#ap_ssid");
+			}
+			return errors;
+		}
+
+		function IsWifiConfErrors() {
+			return !!GetWifiConfErrors().length
+		}
+	</script>
+</body>
+
+</html>

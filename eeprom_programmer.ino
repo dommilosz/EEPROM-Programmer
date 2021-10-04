@@ -45,6 +45,10 @@
 #define debuglnHEX(x)
 #endif
 
+#define IO_HTTP 0
+#define IO_SERIAL 1
+#define IO_BOTH 2
+
 MCP23017 mcp = MCP23017(0x20);
 MCP23017 mcp2 = MCP23017(0x21);
 DynamicJsonDocument json(2048);
@@ -173,9 +177,9 @@ class EEPROMDef {
       IO16b = false;
       if (countPins(Def_IO) > 8) {
         IO16b = true;
-        Serial.println("16b word!");
+        debugln("16b word!");
       }
-      Serial.println("8b word!");
+      debugln("8b word!");
     }
     void pinMode(uint8_t pin, bool mode) {
       pinstateWriteMode(pin, mode);
@@ -299,26 +303,41 @@ void setup(void) {
 }
 
 void loop(void) {
+  IO_Mode(IO_HTTP);
   server.handleClient();
 
-  if(Serial.available()){
+  if (Serial.available()) {
     uint8_t read = Serial.read();
 
-    if(read=='r'){
+    if (read == 'r') {
       Serial.println("Write: 'y' to confirm wifi reset! You have 5s");
       long start = millis();
-      while((millis()-start)<5000){
-       if(Serial.available())break; 
+      while ((millis() - start) < 5000) {
+        if (Serial.available())break;
       }
       read = Serial.read();
-      if(read=='y'){
+      if (read == 'y') {
         Serial.println("Resetting...");
         WifiResetConfig();
         Serial.println("Reset completed!");
         WifiConnect();
-      }else{
+      } else {
         Serial.println("Reset aborted!");
       }
+    }
+    if (read == 'c') {
+      IO_Mode(IO_SERIAL);
+      String read = Serial.readStringUntil('\n');
+
+      if (read == "/read/")handleRead();
+      if (read == "/write/")handleWrite();
+      if (read == "/mcpdwrite/")handleMCPDWrite();
+      if (read == "/mcpwrite/")handleMCPWrite();
+      if (read == "/mcpdump/")handleMcpDump();
+      if (read == "/json/")handleJSON();
+      if (read == "/pinconf/")handlePinDefConfiguration();
+      if (read == "/mcpIOTest/")handleAIOWrite();
+      if (read == "/wificonf/")handleWifiConfig();
     }
   }
 }

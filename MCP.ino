@@ -72,8 +72,11 @@ void ReadEEPROM(int startAddr, int count) {
   eeprom.digitalWrite(eeprom.getPin(Def_WE), HIGH);
   eeprom.IODirection(INPUT);
 
-  server.setContentLength(count);
-  server.send(200, "text/plain", "");
+  if (IO_Is(IO_HTTP)) {
+    server.setContentLength(count);
+    server.send(200, "text/plain", "");
+  }
+
 
   int bCount = ((count / BlockSize) + ((count % BlockSize) > 0));
   debug("bc: ");
@@ -84,7 +87,7 @@ void ReadEEPROM(int startAddr, int count) {
     ReadEEPROM_Block(startAddr + (i * BlockSize), blockCount > BlockSize ? BlockSize : blockCount);
   }
 
-  server.sendContent("");
+  IO_Send(IO_HTTP, "");
   eeprom.digitalWrite(eeprom.getPin(Def_CE), HIGH);
   eeprom.digitalWrite(eeprom.getPin(Def_OE), HIGH);
   eeprom.digitalWrite(eeprom.getPin(Def_WE), HIGH);
@@ -112,7 +115,7 @@ void ReadEEPROM_Block(int startAddr, uint8_t count) {
   debug(count);
   debug("\n");
   debugln(msg);
-  server.sendContent(msg);
+  IO_Send(IO_BOTH, msg);
 }
 
 String ReadWord() {
@@ -137,11 +140,11 @@ void WriteEEPROM(int startAddr) {
   debugln("Write:");
   debugln(data);
   debugln(data.length());
-  
+
   for (int i = 0; i < data.length(); i++) {
     debugln();
     WriteAddress(startAddr + i);
-    WriteData(data[i]); 
+    WriteData(data[i]);
     //eeprom.digitalWrite(eeprom.getPin(Def_OE), HIGH);
     delayMicroseconds(2);
     eeprom.digitalWrite(eeprom.getPin(Def_WE), LOW);
@@ -159,15 +162,15 @@ void WriteEEPROM(int startAddr) {
 void DumpReg(MCP23017Register reg, String name) {
   uint8_t conf = mcp.readRegister(reg);
   uint8_t conf2 = mcp2.readRegister(reg);
-  server.sendContent(name);
-  server.sendContent(":");
-  server.sendContent(String(conf, HEX));
-  server.sendContent("/");
-  server.sendContent(String(conf2, HEX));
-  server.sendContent("\n");
+
+  JsonObject data = json.createNestedObject(name);
+  data["A"] = conf;
+  data["B"] = conf2;
 }
 
 void DumpRegs() {
+  ClearJSON();
+  
   DumpReg(MCP23017Register::IODIR_A, "IODIR_A");
   DumpReg(MCP23017Register::IODIR_B, "IODIR_B");
 
@@ -199,4 +202,8 @@ void DumpRegs() {
 
   DumpReg(MCP23017Register::OLAT_A, "OLAT_A");
   DumpReg(MCP23017Register::OLAT_B, "OLAT_B");
+
+  String msg = "";
+  AppendJSON(msg);
+  IO_SendHead(IO_BOTH,msg);
 }

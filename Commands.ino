@@ -13,9 +13,9 @@ void handleRoot() {
 }
 
 void handleRead() {
-  if (!CheckPost())return;
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
 
-  ReadJSONSV();
+  IO_ReadJSON(IO_BOTH, json);
   int address = json["address"];
   int count   = json["count"];
 
@@ -28,9 +28,9 @@ void handleRead() {
 }
 
 void handleWrite() {
-  if (!CheckPost())return;
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
 
-  ReadJSONSV();
+  IO_ReadJSON(IO_BOTH, json);
   int address = json["address"];
   data   = String(json["data"]);
 
@@ -40,34 +40,34 @@ void handleWrite() {
   debugln(data);
 
   WriteEEPROM(address);
-  server.send(200, "text/plain", "done");
+  IO_SendHead(IO_BOTH, "done");
 }
 
 void handleJSON() {
-  if (!CheckPost())return;
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
 
   data = "POST json was:\n";
-  ReadJSONSV();
+  IO_ReadJSON(IO_BOTH, json);
   AppendJSON(data);
-  server.send(200, "text/plain", data);
+  IO_SendHead(IO_BOTH, data);
 }
 
 void handleMCPDWrite() {
-  if (!CheckPost())return;
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
 
-  ReadJSONSV();
+  IO_ReadJSON(IO_BOTH, json);
   int pin = json["pin"];
   int state   = json["state"];
 
   eeprom.digitalWrite(pin, state);
-  server.send(200, "text/plain", "done");
+  IO_SendHead(IO_BOTH, "done");
 }
 
 void handleMCPWrite() {
-  if (!CheckPost())return;
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
   MCP23017Register reg;
 
-  ReadJSONSV();
+  IO_ReadJSON(IO_BOTH, json);
   int data       = json["data"];
   int regi       = json["reg"];
   int mcpindex   = json["i"];
@@ -80,7 +80,7 @@ void handleMCPWrite() {
     mcp2.writeRegister(reg, data);
   }
 
-  server.send(200, "text/plain", "done");
+  IO_SendHead(IO_BOTH, "done");
 }
 
 void handleNotFound() {
@@ -99,10 +99,16 @@ void handleNotFound() {
 }
 
 void handleMcpDump() {
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/plain", "");
+  if (IO_Is(IO_HTTP)) {
+    server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+    server.send(200, "text/plain", "");
+  }
+
   DumpRegs();
-  server.sendContent("");
+
+  if (IO_Is(IO_HTTP)) {
+    server.sendContent("");
+  }
 }
 
 void handlePinDefConfiguration() {
@@ -118,8 +124,8 @@ void handlePinDefConfiguration() {
 }
 
 void handleAIOWrite() {
-  if (!CheckPost())return;
-  ReadJSONSV();
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
+  IO_ReadJSON(IO_BOTH, json);
 
   int address = json["address"];
   int data    = json["data"];
@@ -132,12 +138,12 @@ void handleAIOWrite() {
     eeprom.writeData(data);
   }
 
-  server.send(200, "text/plain", "done");
+  IO_SendHead(IO_BOTH, "done");
 }
 
 void handleWifiConfig() {
-  if (!CheckPost())return;
-  server.send(200, "text/plain", "done");
+  if (!CheckPost() && IO_Is(IO_HTTP))return;
+  IO_SendHead(IO_BOTH, "done");
   GetWifiConfigSV();
   WifiConnect();
 }

@@ -21,6 +21,15 @@ bool ReadJSONSV(DynamicJsonDocument& json) {
   return ReadJSON(read, json);
 }
 
+bool ReadJSONSerial(){
+  return ReadJSONSerial(json);
+}
+
+bool ReadJSONSerial(DynamicJsonDocument& json){
+  String read = Serial.readStringUntil('\n');
+  return ReadJSON(read, json);
+}
+
 void AppendJSON(String& output) {
   AppendJSON(output, json);
 }

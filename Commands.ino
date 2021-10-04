@@ -112,11 +112,11 @@ void handleMcpDump() {
 }
 
 void handlePinDefConfiguration() {
-  if (server.method() == HTTP_GET) {
+  if (Method() == HTTP_GET) {
     SendMappings();
     return;
   }
-  if (server.method() == HTTP_POST) {
+  if (Method() == HTTP_POST) {
     LoadMappings();
     SendMappings();
     return;

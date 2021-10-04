@@ -252,9 +252,39 @@ class EEPROMDef {
     }
 };
 
-EEPROMDef eeprom;
+const int cmd_count = 32;
 
+typedef void (* VoidFunction)();
+
+class Command {
+  public:
+    VoidFunction callback;
+    String name;
+
+    Command(VoidFunction callback, String name) {
+      this->callback = callback;
+      this->name = name;
+    }
+
+    Command() {
+
+    }
+};
+static Command commands[cmd_count];
+static int registerIndex = 0;
 ESP8266WebServer server(80);
+
+
+void RegisterCommand(void (* callback)(), String name) {
+  if (registerIndex >= cmd_count) {
+    return;
+  }
+  commands[registerIndex] = Command(callback, name);
+  registerIndex++;
+  server.on(name, callback);
+}
+
+EEPROMDef eeprom;
 
 String data;
 
@@ -278,17 +308,7 @@ void setup(void) {
   }
 
   server.on("/", handleRoot);
-
-  server.on("/read/", handleRead);
-  server.on("/write/", handleWrite);
-  server.on("/mcpdwrite/", handleMCPDWrite);
-  server.on("/mcpwrite/", handleMCPWrite);
-  server.on("/mcpdump/", handleMcpDump);
-  server.on("/json/", handleJSON);
-  server.on("/pinconf/", handlePinDefConfiguration);
-  server.on("/mcpIOTest/", handleAIOWrite);
-  server.on("/wificonf/", handleWifiConfig);
-
+  RegisterCommands();
   server.onNotFound(handleNotFound);
 
   server.begin();
@@ -329,15 +349,7 @@ void loop(void) {
       IO_Mode(IO_SERIAL);
       String read = Serial.readStringUntil('\n');
 
-      if (read == "/read/")handleRead();
-      if (read == "/write/")handleWrite();
-      if (read == "/mcpdwrite/")handleMCPDWrite();
-      if (read == "/mcpwrite/")handleMCPWrite();
-      if (read == "/mcpdump/")handleMcpDump();
-      if (read == "/json/")handleJSON();
-      if (read == "/pinconf/")handlePinDefConfiguration();
-      if (read == "/mcpIOTest/")handleAIOWrite();
-      if (read == "/wificonf/")handleWifiConfig();
+      ExecuteCmd(read);
     }
   }
 }

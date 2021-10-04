@@ -8,11 +8,11 @@ void SendMappings() {
 
   String msg;
   AppendJSON(msg);
-  server.send(200, "text/plain", msg);
+  IO_SendHead(IO_BOTH, msg);
 }
 
 void LoadMappings() {
-  ReadJSONSV();
+  IO_ReadJSON(IO_BOTH,json);
   JsonArray array = json["mapping"];
 
   for (int i = 0; i < 32; i++) {

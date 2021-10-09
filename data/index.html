@@ -349,7 +349,11 @@
 				address,
 				count
 			});
-			return result.text();
+			let res2 = "";
+			(await result.text()).replaceAll(/,$/g,"").split(",").forEach(el=>{
+				res2 += atob(el);
+			})
+			return res2;
 		}
 
 		let blockSize = 65535;
@@ -367,7 +371,7 @@
 		async function WriteEEPROM(address, data) {
 			let result = await SendCMD("write", {
 				address,
-				data
+				data:btoa(data)
 			});
 			return result.text();
 		}

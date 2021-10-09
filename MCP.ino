@@ -115,7 +115,10 @@ void ReadEEPROM_Block(int startAddr, uint8_t count) {
   debug(count);
   debug("\n");
   debugln(msg);
-  IO_Send(IO_BOTH, msg);
+  base64.encode(msg);
+  msg = String(base64.result());
+  debugln(msg);
+  IO_Send(IO_BOTH, msg+",");
 }
 
 String ReadWord() {

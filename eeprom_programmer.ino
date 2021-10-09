@@ -6,6 +6,7 @@
 #include <MCP23017.h>
 #include <ArduinoJson.h>
 #include "LittleFS.h"
+#include <rBase64.h>
 
 #define D11 9
 #define D12 10
@@ -28,14 +29,16 @@
 #define MCP_INPUT  0b11111111
 
 #define DEBUG 0
+#define DEBUG_VERBOSE 0
+bool debug_ovr = true;
 
 #if DEBUG == 1
-#define debug(x) Serial.print(x)
-#define debugln(x) Serial.println(x)
-#define debugBIN(x) Serial.print(x,BIN)
-#define debuglnBIN(x) Serial.println(x,BIN)
-#define debugHEX(x) Serial.print(x,HEX)
-#define debuglnHEX(x) Serial.println(x,HEX)
+#define debug(x) if(debug_ovr) Serial.print(x)
+#define debugln(x) if(debug_ovr) Serial.println(x)
+#define debugBIN(x) if(debug_ovr) Serial.print(x,BIN)
+#define debuglnBIN(x) if(debug_ovr) Serial.println(x,BIN)
+#define debugHEX(x) if(debug_ovr) Serial.print(x,HEX)
+#define debuglnHEX(x) if(debug_ovr) Serial.println(x,HEX)
 #else
 #define debug(x)
 #define debugln(x)
@@ -45,6 +48,16 @@
 #define debuglnHEX(x)
 #endif
 
+#if DEBUG_VERBOSE
+#define Vdebug(x) debug(x)
+#define Vdebugln(x) debugln(x)
+#define VdebugBIN(x) debugBIN(x,BIN)
+#else
+#define Vdebug(x)
+#define Vdebugln(x)
+#define VdebugBIN(x)
+#endif
+
 #define IO_HTTP 0
 #define IO_SERIAL 1
 #define IO_BOTH 2
@@ -52,6 +65,8 @@
 MCP23017 mcp = MCP23017(0x20);
 MCP23017 mcp2 = MCP23017(0x21);
 DynamicJsonDocument json(2048);
+DynamicJsonDocument wifi_json(256);
+rBase64generic<8192> base64;
 
 void MCPDigitalWrite(MCP23017 &_mcp, uint8_t pin, bool state) {
   _mcp.digitalWrite(pin, state);
@@ -103,7 +118,7 @@ class EEPROMDef {
       } else {
         pinstates &= ~(1 << pin);
       }
-      debugBIN(pinstates);
+      VdebugBIN(pinstates);
     }
 
     void pinstateWriteMode(uint8_t pin, bool state) {
@@ -319,6 +334,7 @@ void setup(void) {
 
   digitalWrite(LED_BUILTIN, LOW);
   eeprom.SetupDefaultMappings();
+  Serial.setTimeout(1000);
   MCPReset();
 }
 
@@ -344,12 +360,37 @@ void loop(void) {
       } else {
         Serial.println("Reset aborted!");
       }
+      Serial.write('\0');
     }
     if (read == 'c') {
       IO_Mode(IO_SERIAL);
       String read = Serial.readStringUntil('\n');
-
       ExecuteCmd(read);
+      Serial.write('\0');
+      return;
+    }
+    if (read == 'w') {
+      String confJSON = "";
+      AppendJSON(confJSON, wifi_json);
+      Serial.println(confJSON);
+      Serial.write('\0');
+      return;
+    }
+    if (read == 'd') {
+      uint8_t bytes[1];
+      Serial.readBytes(bytes, 1);
+      debug_ovr = bytes[0] == 1;
+      Serial.println(debug_ovr);
+      Serial.write('\0');
+      return;
+    }
+    if (read == 'i') {
+      uint8_t bytes[1];
+      Serial.readBytes(bytes, 1);
+      if (bytes[0] == 'p') {
+        SendIpData();
+        return;
+      }
     }
   }
 }

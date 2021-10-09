@@ -1,6 +1,7 @@
 void ExecuteCmd(String name) {
   int cmd = GetCommand(name);
-  if (cmd > 0) {
+  debugln(cmd);
+  if (cmd >= 0) {
     commands[cmd].callback();
   }
 

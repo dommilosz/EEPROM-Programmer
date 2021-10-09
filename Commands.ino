@@ -33,6 +33,8 @@ void handleWrite() {
   IO_ReadJSON(IO_BOTH, json);
   int address = json["address"];
   data   = String(json["data"]);
+  base64.decode(data);
+  data   = String(base64.result());
 
   debugln("Read: Addr:");
   debugln(address);

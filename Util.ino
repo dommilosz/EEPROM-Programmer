@@ -13,12 +13,12 @@ uint8_t ReverseUint8(uint8_t b) {
   return b;
 }
 
-uint16_t CreatePinID(uint8_t type, uint8_t id){
+uint16_t CreatePinID(uint8_t type, uint8_t id) {
   return ((type << 8) | id);
 }
 
 void listFiles() {
-  if(DEBUG == 0)return;
+  if (DEBUG == 0)return;
   debugln("LittleFS files:");
   Dir root = LittleFS.openDir("/");
   while (root.next()) {
@@ -27,5 +27,6 @@ void listFiles() {
     debug(root.fileName());
     debug("  SIZE: ");
     debug(file.size());
-    file.close();  }
+    file.close();
+  }
 }

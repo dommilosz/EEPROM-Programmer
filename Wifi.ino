@@ -10,8 +10,6 @@ String DefPASS;
 String DefASSID = APSSID;
 String DefAPSK = APPSK;
 
-DynamicJsonDocument wifi_json(256);
-
 #define CONNECT_TIMEOUT 15000
 
 void WifiConnect() {
@@ -121,7 +119,7 @@ void WifiVarsFromJSON() {
 }
 
 void GetWifiConfigSV() {
-  ReadJSONSV(json);
+  IO_ReadJSON(IO_BOTH,json);
 
   TransferPropertyMsg(wifi_json, json, "ssid", true);
   TransferPropertyMsg(wifi_json, json, "pass", true);
@@ -130,4 +128,20 @@ void GetWifiConfigSV() {
 
   WifiVarsFromJSON();
   WifiWriteConfig();
+}
+
+void SendIpData(){
+  ClearJSON();
+  json["ip"] = WiFi.localIP();
+  json["apip"] = WiFi.softAPIP();
+  json["ssid"] = DefSSID;
+  json["ap_ssid"] = DefASSID;
+  json["mac"] = WiFi.macAddress();
+  json["mask"] = WiFi.subnetMask();
+  json["gate"] = WiFi.gatewayIP();
+  json["status"] = WiFi.status();
+  String msg = "";
+  AppendJSON(msg,json);
+  Serial.print(msg);
+  Serial.write(0);
 }

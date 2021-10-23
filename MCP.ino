@@ -209,13 +209,13 @@ void DumpRegs() {
 
   String msg = "";
   AppendJSON(msg);
-  IO_SendHead(IO_BOTH,msg);
+  IO_Send(IO_BOTH,msg);
 }
 
 void MCPBenchMark(){
   long start = micros();
   WriteData(0);
-  WriteData(255);
+  WriteData(0xFFFF);
   long end = micros();
   Serial.print("W [uS]: ");
   Serial.println(end-start);

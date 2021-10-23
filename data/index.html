@@ -201,14 +201,18 @@
 	</div>
 
 	<div id="wifi_panel" class="panel" style="visibility: hidden; height: 0px">
-		<input type="checkbox" id="modify_ssid" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">SSID: </span><input
-			onchange="RenderErrorsWifiConf()" type="text" id="ssid" class="wifiConfField" /><br />
-		<input type="checkbox" id="modify_pass" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">PASSWORD:
+		<input type="checkbox" id="modify_ssid" onchange="RenderErrorsWifiConf()"><span
+			style="width: 200px; display: inline-block">SSID: </span><input onchange="RenderErrorsWifiConf()"
+			type="text" id="ssid" class="wifiConfField" /><br />
+		<input type="checkbox" id="modify_pass" onchange="RenderErrorsWifiConf()"><span
+			style="width: 200px; display: inline-block">PASSWORD:
 		</span><input onchange="RenderErrorsWifiConf()" type="text" id="password" class="wifiConfField" /><br />
 		<br>
-		<input type="checkbox" id="modify_apssid" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">AP SSID:
+		<input type="checkbox" id="modify_apssid" onchange="RenderErrorsWifiConf()"><span
+			style="width: 200px; display: inline-block">AP SSID:
 		</span><input onchange="RenderErrorsWifiConf()" type="text" id="ap_ssid" class="ap_mod wifiConfField" /><br />
-		<input type="checkbox" id="modify_appass" onchange="RenderErrorsWifiConf()"><span style="width: 200px; display: inline-block">AP PASSWORD:
+		<input type="checkbox" id="modify_appass" onchange="RenderErrorsWifiConf()"><span
+			style="width: 200px; display: inline-block">AP PASSWORD:
 		</span><input onchange="RenderErrorsWifiConf()" type="text" id="ap_password"
 			class="ap_mod wifiConfField" /><br />
 		<button onclick="SendWifiConfiguration()">Save</button>
@@ -350,10 +354,8 @@
 				count
 			});
 			let res2 = "";
-			(await result.text()).replaceAll(/,$/g,"").split(",").forEach(el=>{
-				res2 += atob(el);
-			})
-			return res2;
+			let data = await result.text();
+			return data;
 		}
 
 		let blockSize = 65535;
@@ -371,7 +373,7 @@
 		async function WriteEEPROM(address, data) {
 			let result = await SendCMD("write", {
 				address,
-				data:btoa(data)
+				data: btoa(data)
 			});
 			return result.text();
 		}
@@ -439,22 +441,14 @@
 		}
 
 		async function refreshRegs() {
-			let regs = await (await MCPDumpRegs()).text();
+			let regs = await (await MCPDumpRegs()).json();
 			let regbox = document.querySelector("#regbox");
 			regbox.innerHTML = "";
-			regs.split("\n").forEach((el) => {
-				let reg = el.split(":");
-				if (reg[0] && reg[1]) {
-					reg = {
-						name: reg[0].trim(),
-						value1: reg[1].trim().split("/")[0],
-						value2: reg[1].trim().split("/")[1]
-					};
-					regbox.innerHTML += `<span>${reg.name}: ${intToHex(
-						reg.value1
-					)} / ${intToHex(reg.value2)}</span><br>`;
-				}
-			});
+
+			Object.keys(regs).forEach(key => {
+				let el = regs[key];
+				regbox.innerHTML += `<span>${key}: ${intToHex(el.A)} / ${intToHex(el.B)}</span><br>`;
+			})
 		}
 
 		async function writeReg() {
@@ -462,9 +456,9 @@
 			let data = document.querySelector("#reg_val");
 			let mcp = document.querySelector("#mcp_sel_w");
 			let result = await SendCMD("mcpwrite", {
-				data: data.value,
-				reg: reg.value,
-				i: mcp.value
+				data: Number(data.value),
+				reg: Number(reg.value),
+				i: Number(mcp.value)
 			});
 			return result.text();
 		}
@@ -600,7 +594,7 @@
 			if (ssid.length <= 0 && document.querySelector("#modify_ssid").checked) {
 				errors.push("#ssid");
 			}
-			if (apSSID.length <= 0  && document.querySelector("#modify_apssid").checked) {
+			if (apSSID.length <= 0 && document.querySelector("#modify_apssid").checked) {
 				errors.push("#ap_ssid");
 			}
 			return errors;

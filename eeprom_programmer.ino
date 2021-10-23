@@ -85,6 +85,7 @@ class EEPROMDef {
     uint8_t  mapping_c[13][16];
     uint32_t pinstates = 0x00000000;
     uint32_t pinstates_mode = 0xFFFFFFFF;
+    uint8_t  pinstates_read[4];
 
     void LoadMappings(uint16_t new_mappings[]) {
       memcpy(mapping, new_mappings, sizeof(mapping));
@@ -146,10 +147,8 @@ class EEPROMDef {
       RA2 = ReverseUint8(RA2);
       //RB2 = ReverseUint8(RB2);
 
-      mcp.writePort(MCP23017Port::A, RA1);
-      mcp.writePort(MCP23017Port::B, RB1);
-      mcp2.writePort(MCP23017Port::A, RA2);
-      mcp2.writePort(MCP23017Port::B, RB2);
+      mcp.writeRegister(MCP23017Register::GPIO_A, RA1, RB1);
+      mcp2.writeRegister(MCP23017Register::GPIO_A, RA2, RB2);
     }
 
     void applyModeState() {
@@ -195,6 +194,11 @@ class EEPROMDef {
       this->digitalWrite(this->getPin(Def_CE), HIGH);
       this->digitalWrite(this->getPin(Def_OE), HIGH);
 
+      pinstates_read[0] = 0;
+      pinstates_read[1] = 0;
+      pinstates_read[2] = 0;
+      pinstates_read[3] = 0;
+
       IO16b = false;
       if (countPins(Def_IO) > 8) {
         IO16b = true;
@@ -234,6 +238,26 @@ class EEPROMDef {
       }
     }
 
+    bool digitalReadB(uint8_t pin) {
+      if (pin >= 16) {
+        pin = pin % 16;
+        bool portB = false;
+        if (pin > 7) {
+          portB = true;
+          pin -= 8;
+        }
+        return (bitRead(portB?pinstates_read[3]:pinstates_read[2], pin));
+      } else {
+        pin = pin % 16;
+        bool portB = false;
+        if (pin > 7) {
+          portB = true;
+          pin -= 8;
+        }
+        return (bitRead(portB?pinstates_read[1]:pinstates_read[0], pin));
+      }
+    }
+
     void writeAddress(uint16_t address) {
       for (byte i = 0; i < 16; i++) {
         uint8_t pin = getPin(Def_A, i);
@@ -264,12 +288,22 @@ class EEPROMDef {
     }
     uint16_t readData() {
       uint16_t data = 0;
+      this->fetchRead();
       for (byte i = 0; i < 16; i++) {
         uint8_t pin = getPin(Def_IO, i);
         if (pin < 0)break;
-        data |= (this->digitalRead(pin) << i);
+        data |= (this->digitalReadB(pin) << i);
       }
       return data;
+    }
+
+    void fetchRead() {
+      uint16_t r1 = mcp.read();
+      uint16_t r2 = mcp2.read();
+      pinstates_read[0] = r1;
+      pinstates_read[1] = r1>>8;
+      pinstates_read[2] = r2;
+      pinstates_read[3] = r2>>8;
     }
 };
 

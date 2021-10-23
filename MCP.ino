@@ -115,10 +115,11 @@ void ReadEEPROM_Block(int startAddr, uint8_t count) {
   debug(count);
   debug("\n");
   debugln(msg);
-  base64.encode(msg);
-  msg = String(base64.result());
+  //base64.encode(msg);
+  //msg = String(base64.result());
   debugln(msg);
-  IO_Send(IO_BOTH, msg+",");
+  //IO_Send(IO_BOTH, msg+",");
+  IO_Send(IO_BOTH, msg);
 }
 
 String ReadWord() {
@@ -209,4 +210,19 @@ void DumpRegs() {
   String msg = "";
   AppendJSON(msg);
   IO_SendHead(IO_BOTH,msg);
+}
+
+void MCPBenchMark(){
+  long start = micros();
+  WriteData(0);
+  WriteData(255);
+  long end = micros();
+  Serial.print("W [uS]: ");
+  Serial.println(end-start);
+
+  start = micros();
+  ReadData();
+  end = micros();
+  Serial.print("R [uS]: ");
+  Serial.println(end-start);
 }

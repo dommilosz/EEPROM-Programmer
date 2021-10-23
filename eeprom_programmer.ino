@@ -64,6 +64,12 @@ bool debug_ovr = true;
 
 MCP23017 mcp = MCP23017(0x20);
 MCP23017 mcp2 = MCP23017(0x21);
+#define KHz(x) 1000*x
+#define MHz(x) KHz(1000*x)
+#define CreatePinID(type,id) ((type << 8) | id)
+
+#define I2C_SPEED KHz(333)
+
 DynamicJsonDocument json(2048);
 DynamicJsonDocument wifi_json(256);
 rBase64generic<8192> base64;
@@ -313,6 +319,7 @@ void setup(void) {
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.begin(115200);
   Serial.println("");
+  Wire.setClock(I2C_SPEED);
   Wire.begin();
 
   WifiReadConfig();
@@ -335,6 +342,7 @@ void setup(void) {
   digitalWrite(LED_BUILTIN, LOW);
   eeprom.SetupDefaultMappings();
   Serial.setTimeout(1000);
+  MCPBenchMark();
   MCPReset();
 }
 

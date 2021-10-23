@@ -13,10 +13,6 @@ uint8_t ReverseUint8(uint8_t b) {
   return b;
 }
 
-uint16_t CreatePinID(uint8_t type, uint8_t id) {
-  return ((type << 8) | id);
-}
-
 void listFiles() {
   if (DEBUG == 0)return;
   debugln("LittleFS files:");

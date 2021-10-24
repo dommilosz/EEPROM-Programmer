@@ -7,7 +7,6 @@
 #include <ArduinoJson.h>
 #include "LittleFS.h"
 #include <rBase64.h>
-
 #define D11 9
 #define D12 10
 
@@ -68,7 +67,7 @@ MCP23017 mcp2 = MCP23017(0x21);
 #define MHz(x) KHz(1000*x)
 #define CreatePinID(type,id) ((type << 8) | id)
 
-#define I2C_SPEED KHz(333)
+#define I2C_SPEED KHz(666)
 
 DynamicJsonDocument json(2048);
 DynamicJsonDocument wifi_json(256);
@@ -246,7 +245,7 @@ class EEPROMDef {
           portB = true;
           pin -= 8;
         }
-        return (bitRead(portB?pinstates_read[3]:pinstates_read[2], pin));
+        return (bitRead(portB ? pinstates_read[3] : pinstates_read[2], pin));
       } else {
         pin = pin % 16;
         bool portB = false;
@@ -254,7 +253,7 @@ class EEPROMDef {
           portB = true;
           pin -= 8;
         }
-        return (bitRead(portB?pinstates_read[1]:pinstates_read[0], pin));
+        return (bitRead(portB ? pinstates_read[1] : pinstates_read[0], pin));
       }
     }
 
@@ -301,9 +300,9 @@ class EEPROMDef {
       uint16_t r1 = mcp.read();
       uint16_t r2 = mcp2.read();
       pinstates_read[0] = r1;
-      pinstates_read[1] = r1>>8;
+      pinstates_read[1] = r1 >> 8;
       pinstates_read[2] = r2;
-      pinstates_read[3] = r2>>8;
+      pinstates_read[3] = r2 >> 8;
     }
 };
 
@@ -356,11 +355,15 @@ void setup(void) {
   Wire.setClock(I2C_SPEED);
   Wire.begin();
 
+  Serial.print(F("System information:"));
+  Serial.print(F("\nI2C_CLOCK: "));
+  Serial.println(I2C_SPEED);
+
   WifiReadConfig();
   WifiConnect();
 
   if (MDNS.begin("esp8266")) {
-    Serial.println("MDNS responder started");
+    Serial.println(F("MDNS responder started"));
   }
 
   server.on("/", handleRoot);
@@ -368,10 +371,12 @@ void setup(void) {
   server.onNotFound(handleNotFound);
 
   server.begin();
-  Serial.println("HTTP server started");
+  Serial.println(F("HTTP server started"));
 
   mcp.init();
   mcp2.init();
+
+  CheckMCPConnection();
 
   digitalWrite(LED_BUILTIN, LOW);
   eeprom.SetupDefaultMappings();

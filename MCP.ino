@@ -174,7 +174,7 @@ void DumpReg(MCP23017Register reg, String name) {
 
 void DumpRegs() {
   ClearJSON();
-  
+
   DumpReg(MCP23017Register::IODIR_A, "IODIR_A");
   DumpReg(MCP23017Register::IODIR_B, "IODIR_B");
 
@@ -209,20 +209,39 @@ void DumpRegs() {
 
   String msg = "";
   AppendJSON(msg);
-  IO_Send(IO_BOTH,msg);
+  IO_Send(IO_BOTH, msg);
 }
 
-void MCPBenchMark(){
+void MCPBenchMark() {
   long start = micros();
   WriteData(0);
   WriteData(0xFFFF);
   long end = micros();
   Serial.print("W [uS]: ");
-  Serial.println(end-start);
+  Serial.println(end - start);
 
   start = micros();
   ReadData();
   end = micros();
   Serial.print("R [uS]: ");
-  Serial.println(end-start);
+  Serial.println(end - start);
+}
+
+void CheckMCPConnection() {
+  Wire.beginTransmission(0x20);
+  byte error = Wire.endTransmission();
+  if(error==0){
+    Serial.println("0x20 ready!");
+  }else{
+    Serial.print("0x20 error: ");
+    Serial.println(error);
+  }
+  Wire.beginTransmission(0x21);
+  error = Wire.endTransmission();
+  if(error==0){
+    Serial.println("0x21 ready!");
+  }else{
+    Serial.print("0x21 error: ");
+    Serial.println(error);
+  }
 }
